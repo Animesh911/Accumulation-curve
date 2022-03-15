@@ -24,10 +24,10 @@ python rarefy_kaiju.py --file test.txt
 ```
 
 
-## TSV file with header
+## TSV file with sample header and detected taxonomic id 
 ```
 test.txt: 
-column_a	column_b
+sample1	sample2
 0	288793
 0	0
 0	0
