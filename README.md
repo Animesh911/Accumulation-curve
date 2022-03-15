@@ -1,4 +1,4 @@
-# rarefaction-curve
+## Rarefaction-curve
 usage: rarefy_kaiju.py [-h] [--file FILE] [--sample_frac SAMPLE_FRAC] [--threshold [THRESHOLD]] [--sim [SIM]]
 
 options:
