@@ -23,23 +23,34 @@ output:
 todo:
     1. line 77 check for non classified organisms
     2. samp_frac in list
+    3. Option for printing output file
+    4. box plot if possible
+    
+flaws, should be:
+    1. sample without replacement, by excluding
+    2. repeating of sample is not allowed: chances are it will jeopardise the abundences of lower species count
+
 """
 
-
+import sys
 import random
 import argparse
 import pandas as pd
 import matplotlib.pyplot as plt
 
      
-def line_plot(temp_var):
+def line_plot(temp_var, output_file):
     """
     Plot line graph  
     """
     for k, v in temp_var.items():
         plt.plot( v, label=k)
         plt.legend()  # To draw legend
-    plt.show() 
+    
+    if output_file:
+        plt.savefig(output_file)
+    else:
+        plt.show() 
 
 
 def average(samplefrac_classify):
@@ -107,7 +118,7 @@ def classify_per(column_name, item, threshold):
     
 
 
-def rarefy_curve(file, sample_frac, threshold, sim_times):
+def rarefy_curve(file, sample_frac, threshold, sim_times, output_file):
     """
     Function to calculate percentage of classified organism
     """
@@ -139,10 +150,8 @@ def rarefy_curve(file, sample_frac, threshold, sim_times):
                 temp_var[k2].append(v2)
         #return(temp_var)
     
-    line_plot(temp_var)    
-    
+    line_plot(temp_var, output_file)    
     return(temp_var, my_index)
-
 
 
 if __name__ == '__main__':
@@ -152,8 +161,15 @@ if __name__ == '__main__':
     parser.add_argument("--sample_frac", default = '0.01, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1', type=str, help = "comma seperated fraction of sample (without spaces). Example: --sample_frac 0.01,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,0.55,0.6,0.65,0.7,0.75,0.8,.85,0.9,0.95,1")
     parser.add_argument("--threshold", nargs='?', const=1, default = 2, type=int, help = "Minimum occurance in a sample to claim a species, default = 2")
     parser.add_argument("--sim", nargs='?', const=1, default=10,  type=int, help = "No of times to simulate, default = 10")
-    args = parser.parse_args()
-    rarefy_curve(args.file, args.sample_frac, args.threshold, args.sim)
+    parser.add_argument("-o", "--output", help="Save to a file, default: Prints Rarefaction curve on the console")
+    args = parser.parse_args()    
+    if len(sys.argv)==1:
+    # display help message when no args are passed.
+        parser.print_help()
+        sys.exit(1)
+    rarefy_curve(args.file, args.sample_frac, args.threshold, args.sim, args.output)
+    
+    
 
 
 
