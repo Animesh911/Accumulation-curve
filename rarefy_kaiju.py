@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
 Created on Tue Mar  8 09:11:50 2022
@@ -150,8 +150,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description = "Rarefaction curve")
     parser.add_argument("--file", help = "TSV file where samples are in column")
     parser.add_argument("--sample_frac", default = '0.01, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1', type=str, help = "comma seperated fraction of sample (without spaces). Example: --sample_frac 0.01,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,0.55,0.6,0.65,0.7,0.75,0.8,.85,0.9,0.95,1")
-    parser.add_argument("--threshold", nargs='?', const=1, default = 2, type=int, help = "Minimum occurance in a sample to claim a species")
-    parser.add_argument("--sim", nargs='?', const=1, default=10,  type=int, help = "No of times to simulate")
+    parser.add_argument("--threshold", nargs='?', const=1, default = 2, type=int, help = "Minimum occurance in a sample to claim a species, default = 2")
+    parser.add_argument("--sim", nargs='?', const=1, default=10,  type=int, help = "No of times to simulate, default = 10")
     args = parser.parse_args()
     rarefy_curve(args.file, args.sample_frac, args.threshold, args.sim)
 
