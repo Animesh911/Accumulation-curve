@@ -3,26 +3,20 @@
 Plot accumulation curve based on subsampling with repacement
 
 ## Usage
-
+```
 Usage: accumulation_curve_kaiju.py [-h] [--file FILE] [--sample_frac SAMPLE_FRAC] [--threshold [THRESHOLD]] [--sim [SIM]] [--save SAVE] [--format {png,jpeg,jpg,tiff,pdf}]
 
 
   Options:
 
-    -h, --help            show this help message and exit
-    --file FILE           TSV file where samples are in column
-    --sample_frac SAMPLE_FRAC
-                        comma seperated fraction of sample (without spaces).
-                        Example: --sample_frac 0,0.01,0.05,0.1,0.15,0.2,0.25,0
-                        .3,0.35,0.4,0.45,0.5,0.55,0.6,0.65,0.7,0.75,0.8,.85,0.
-                        9,0.95,1
-    --threshold [THRESHOLD]
-                        Minimum occurance in a sample to claim a species,
-                        default = 2
-    --sim [SIM]           No of times to simulate, default = 10
-    --save SAVE           Save the plot as...
-    --format {png,jpeg,jpg,tiff,pdf}
-                        Output format, Default = png
+    -h, --help                        show this help message and exit
+    --file FILE                       TSV file where samples are in column
+    --sample_frac SAMPLE_FRAC         comma seperated fraction of sample (without spaces).
+                                      Example: --sample_frac 0,0.01,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,0.55,0.6,0.65,0.7,0.75,0.8,.85,0.9,0.95,1
+    --threshold [THRESHOLD]           Minimum occurance in a sample to claim a species, default = 2
+    --sim [SIM]                       No of times to simulate, default = 10
+    --save SAVE                       Save the plot as...
+    --format {png,jpeg,jpg,tiff,pdf}  Output format, Default = png
 
 ```
 
