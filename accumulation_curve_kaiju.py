@@ -11,7 +11,7 @@ test.txt: sample header with taxonomic id per line
 
 Things to consider:
     1. fraction of sample
-    samp_frac <- c(0.01, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1)
+    samp_frac <- c(0, 0.01, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1)
     2. Total simulation
     simulation <- 1:10
     3. Minimum occurance in a sample to claim a species
@@ -19,37 +19,38 @@ Things to consider:
 
 Output:
     1. Accumulation Curve of more than one sample, default saves image in the same directory
-    2. Prints the above parameter along with the image file
+    2. Prints the above parameter along with the image file: todo
 
 todo:
-    2. samp_frac in list
     3. Option for printing output file
+    4. check for input data: tab seperated or ....
     
 flaws, should be:
     1. sample without replacement, by excluding
-    2. repeating of sample is not allowed: chances are it will jeopardise the abundences of lower species count
     3. Accumulation curve: https://www.biosym.uzh.ch/modules/models/Biodiversity/MeasuresOfBioDiversity.html
-    4. rows must be > 10
+
 """
 
 __author__ = "Animesh"
 __version__ = '0.1.0'
 
 import sys
-import random
 import argparse
-import numpy as np
 import pandas as pd
+import seaborn as sns
 import matplotlib.pyplot as plt
-     
-def line_plot(temp_var, file, save, format):
+
+
+   
+def my_plot(temp_var, file, save, format):
     """
-    Plot line graph  
+    #Plot line graph  
     """
-    #print(temp_var)
-    for k, v in temp_var.items():
-        plt.plot( v, label=k)
-        plt.legend()  # To draw legend
+        
+    rel = sns.relplot(data = temp_var, x = 'sample_fraction', y = 'counts', ci=68, kind= 'line', hue = 'sample')
+    rel.fig.suptitle('Accumulation Curve')
+    plt.xlabel("Fraction of samples") 
+    plt.ylabel("Species Estimated") 
     
     if save:
         print ("Analysis Done! \nPlease find your file:", save+"."+format)
@@ -57,43 +58,31 @@ def line_plot(temp_var, file, save, format):
     else:        
         plt.show()
 
-
-def average(samplefrac_classify):
-    """
-    Iterate over dictonary to get average out of list
-    """
-    for k1,v1 in samplefrac_classify.items():
-        for k2, v2 in v1.items():
-            v1[k2]= sum(v2)/(len(v2))
-        #print(v1[k2])
-    return(samplefrac_classify)
-    
-
       
-def simulation(df, sample_frac, threshold, sim_times):   
+def simulation(my_file, sample_frac, threshold, sim_times):   
     """
-    Perform simulation on sampled data 
+    #Perform simulation on sampled data 
     """
-    sim_data = {} 
-
+    
+    data_over_simulated = pd.DataFrame(columns=["sample", "counts"])    #create new dataframe
+    
     for i in range(sim_times):                                          #simulate over 10 times
-        sample = df.sample(frac= sample_frac)                           #sample as per fraction
+        sample = my_file.sample(frac= sample_frac)                      #select sample as per fraction
         
         result_classify = 0                                             #initialize
-        for column_name, item in sample.iteritems():                    #iterate over columns
-            result_classify = classify_count(column_name, item, threshold)
-            
-            if column_name not in sim_data:                             #save iterative value
-                sim_data[column_name] = [result_classify]
-            else:
-                sim_data[column_name].append(result_classify)
-    return(sim_data)
-
+        for column_name, value in sample.iteritems():                   #iterate over columns
+            result_classify = classify_count(column_name, value, threshold)
+       
+            data_over_simulated = data_over_simulated.append({"sample" : column_name, "counts" : result_classify}, ignore_index = True) #append dataframe
+    
+    data_over_simulated['sample_fraction'] = sample_frac                #add new column
+    
+    return(data_over_simulated)
 
 
 def classify_count(column_name, item, threshold):
     """
-    Calculates classified taxon count
+    #Calculates classified taxon count
     """
     #total_species = len(item)
     
@@ -111,60 +100,37 @@ def classify_count(column_name, item, threshold):
 
 def rarefy_curve(file, sample_frac, threshold, sim_times, save, format):
     """
-    Function to calculate percentage of classified organism
+    #Function to calculate percentage of classified organism
     """
-    df = pd.read_csv(file, delimiter="\t")
+    my_file = pd.read_csv(file, delimiter="\t")
       
     sampl_frac1 = sample_frac.split(",")
     sample_frac = [float(x) for x in sampl_frac1]
 
-    if not type(sample_frac) == list:                           #check if it's a list
+    if not type(sample_frac) == list:                                    #check if it's a list
         sample_frac = [sample_frac]
+     
+     
+    all_sim_data = pd.DataFrame(columns=["sample", "counts", "sample_fraction"])  
            
-    samplefrac_classify = {}
     for frac in sample_frac:
-        sim_frac = simulation(df, frac, threshold, sim_times)   #holds value over simulation
-        samplefrac_classify[frac] = sim_frac
+        sim_frac = simulation(my_file, frac, threshold, sim_times)        #holds value over simulation dataframe
+        
+        all_sim_data = all_sim_data.append(sim_frac, ignore_index= True)  #append all data
     
-    #print(samplefrac_classify[0.95])
+    all_sim_data["counts"] = pd.to_numeric(all_sim_data["counts"], downcast="float")   
+    all_sim_data["sample_fraction"] = pd.to_numeric(all_sim_data["sample_fraction"], downcast="float") 
+    #print(all_sim_data.to_string())
     
-    mean_ci ={}
-    for frac, value_dict in samplefrac_classify.items():
-        for col_name, value_list in value_dict.items():
-            mean = np.mean(value_list)
-            ci = 0.1 * np.std(value_list, ddof=1) / np.mean(value_list)  #define the confidence interval
-            if col_name not in mean_ci:
-                mean_ci[col_name] = [[mean, ci]]
-            else:
-                mean_ci[col_name].append([mean, ci])
-    print("mean_ci", mean_ci)
-    
-    avg = average(samplefrac_classify)
-    
-    my_index = list(samplefrac_classify.keys())
-    #print("new key", list(samplefrac_classify.keys()) )    
-    
-    temp_var = {}   
-    for k1,v1 in avg.items():
-        for k2, v2 in v1.items():
-            if k2 not in temp_var:                              #save iterative value
-                temp_var[k2] = [v2]
-            else:
-                temp_var[k2].append(v2)
-        #return(temp_var)
-    
-    line_plot(temp_var, file, save, format)    
+    my_plot(all_sim_data, file, save, format)
 
-    
-    return(temp_var, my_index)
-    
-    
+
 
 if __name__ == '__main__':
     ##parse your arguments
     parser = argparse.ArgumentParser(description = "Rarefaction curve")
     parser.add_argument("--file", help = "TSV file where samples are in column")
-    parser.add_argument("--sample_frac", default = '0.01, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1', type=str, help = "comma seperated fraction of sample (without spaces). Example: --sample_frac 0.01,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,0.55,0.6,0.65,0.7,0.75,0.8,.85,0.9,0.95,1")
+    parser.add_argument("--sample_frac", default = '0, 0.01, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1', type=str, help = "comma seperated fraction of sample (without spaces). Example: --sample_frac 0,0.01,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,0.55,0.6,0.65,0.7,0.75,0.8,.85,0.9,0.95,1")
     parser.add_argument("--threshold", nargs='?', const=1, default = 2, type=int, help = "Minimum occurance in a sample to claim a species, default = 2")
     parser.add_argument("--sim", nargs='?', const=1, default=10,  type=int, help = "No of times to simulate, default = 10")
     parser.add_argument("--save", help="Save the plot as...")
@@ -176,12 +142,3 @@ if __name__ == '__main__':
     rarefy_curve(args.file, args.sample_frac, args.threshold, args.sim, args.save, args.format)
     
     
-
-
-
-
-   
-
-
-    
-
