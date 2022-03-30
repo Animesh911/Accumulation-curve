@@ -47,7 +47,7 @@ def my_plot(temp_var, file, save, format):
     #Plot line graph  
     """
         
-    rel = sns.relplot(data = temp_var, x = 'sample_fraction', y = 'counts', ci=68, kind= 'line', hue = 'sample')
+    rel = sns.relplot(data = temp_var, x = 'sample_fraction', y = 'counts', ci=95, kind= 'line', hue = 'sample')
     rel.fig.suptitle('Accumulation Curve')
     plt.xlabel("Fraction of samples") 
     plt.ylabel("Species Estimated") 
@@ -128,12 +128,12 @@ def rarefy_curve(file, sample_frac, threshold, sim_times, save, format):
 
 if __name__ == '__main__':
     ##parse your arguments
-    parser = argparse.ArgumentParser(description = "Rarefaction curve")
+    parser = argparse.ArgumentParser(description = "Accumulation curve")
     parser.add_argument("--file", help = "TSV file where samples are in column")
     parser.add_argument("--sample_frac", default = '0, 0.01, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1', type=str, help = "comma seperated fraction of sample (without spaces). Example: --sample_frac 0,0.01,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,0.55,0.6,0.65,0.7,0.75,0.8,.85,0.9,0.95,1")
     parser.add_argument("--threshold", nargs='?', const=1, default = 2, type=int, help = "Minimum occurance in a sample to claim a species, default = 2")
     parser.add_argument("--sim", nargs='?', const=1, default=10,  type=int, help = "No of times to simulate, default = 10")
-    parser.add_argument("--save", help="Save the plot as...")
+    parser.add_argument("-s", "--save", help="Save the plot as...")
     parser.add_argument("--format", choices=('png', 'jpeg', 'jpg', 'tiff', 'pdf'), default = 'png', help="Output format, Default = png")
     args = parser.parse_args()    
     if len(sys.argv)==1: 
