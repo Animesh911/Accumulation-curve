@@ -66,6 +66,6 @@ sample1	sample2
 ## Output Accumulation curve
 test.png
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/43430427/158591776-6478de3f-9627-4667-89a3-f6642251911e.png">
+  <img src="https://github.com/Animesh911/accumulation-curve/blob/main/test.png">
 </p>
 
