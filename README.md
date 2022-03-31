@@ -1,6 +1,11 @@
 ## Accumulation-curve
 
-Plot accumulation curve based on subsampling with repacement
+Plot accumulation curve based on subsampling with repacement.
+
+Species accumulation curve (sollector's curve, species richness curve) are used to estimate number of species in a particular area. 
+
+accumulation_curve.py takes input data as TSV file where each value is Taxonomic id. Here, algorithm performs sampling by fraction on columns and counts unique taxonomic id in a sample (ignoring unclassified taxonomic ids). This process is simulated and repeated for the specified sample fraction.
+
 
 ## Usage
 ```
@@ -27,7 +32,6 @@ Usage: accumulation_curve_kaiju.py [-h] [--file FILE] [--sample_frac SAMPLE_FRAC
 ```
 python accumulation_curve_kaiju.py --file test.txt -s test
 ```
-
 
 ## TSV file with sample header and detected taxonomic id 
 ```
