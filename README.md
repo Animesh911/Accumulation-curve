@@ -4,7 +4,7 @@ Plot accumulation curve based on subsampling with repacement
 
 ## Usage
 ```
-Usage: accumulation_curve_kaiju.py [-h] [--file FILE] [--sample_frac SAMPLE_FRAC] [--threshold [THRESHOLD]] [--sim [SIM]] [--ci CI] [--save SAVE] [--format {png,jpeg,jpg,tiff,pdf}]
+Usage: accumulation_curve_kaiju.py [-h] [--file FILE] [--sample_frac SAMPLE_FRAC] [--threshold [THRESHOLD]] [--sim [SIM]] [--ci CI] [--splot SPLOT] [--format {png,jpeg,jpg,tiff,pdf}] [--sdata SDATA]
 
 
   Options:
@@ -17,7 +17,7 @@ Usage: accumulation_curve_kaiju.py [-h] [--file FILE] [--sample_frac SAMPLE_FRAC
     --sim [SIM]                       No of times to simulate, default = 10
     --ci CI                           Size of confidence interval, ci: None (default) or sd (standard deviation) or int (95)
     --splot SPLOT                     Save the plot as...
-    --format {png,jpeg,jpg,tiff,pdf}  Output format, Default = png
+    --format {png,jpeg,jpg,tiff,pdf}  Save plot output format as..., default = png
     --sdata SDATA                     Save the final output data used for plotting as...
 
 ```
