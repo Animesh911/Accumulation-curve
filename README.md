@@ -1,10 +1,15 @@
 ## Accumulation-curve
 
-Plot accumulation curve based on subsampling with repacement
+Plot accumulation curve based on subsampling with repacement.
+
+Species accumulation curve (sollector's curve, species richness curve) are used to estimate number of species in a particular area. 
+
+accumulation_curve.py takes input data as TSV file where each value is Taxonomic id. Here, algorithm performs sampling by fraction on columns and counts unique taxonomic id in a sample (ignoring unclassified taxonomic ids). This process is simulated and repeated for the specified sample fraction.
+
 
 ## Usage
 ```
-Usage: accumulation_curve_kaiju.py [-h] [--file FILE] [--sample_frac SAMPLE_FRAC] [--threshold [THRESHOLD]] [--sim [SIM]] [--ci CI] [--save SAVE] [--format {png,jpeg,jpg,tiff,pdf}]
+Usage: accumulation_curve_kaiju.py [-h] [--file FILE] [--sample_frac SAMPLE_FRAC] [--threshold [THRESHOLD]] [--sim [SIM]] [--ci CI] [--splot SPLOT] [--format {png,jpeg,jpg,tiff,pdf}] [--sdata SDATA]
 
 
   Options:
@@ -15,9 +20,10 @@ Usage: accumulation_curve_kaiju.py [-h] [--file FILE] [--sample_frac SAMPLE_FRAC
                                       Example: --sample_frac 0,0.01,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,0.55,0.6,0.65,0.7,0.75,0.8,.85,0.9,0.95,1
     --threshold [THRESHOLD]           Minimum occurance in a sample to claim a species, default = 2
     --sim [SIM]                       No of times to simulate, default = 10
-    --ci CI                           size of confidence interval, ci: None (default) or sd (standard deviation) or int (95)
-    -s SAVE, --save SAVE              Save the plot as...
-    --format {png,jpeg,jpg,tiff,pdf}  Output format, Default = png
+    --ci CI                           Size of confidence interval, ci: None (default) or sd (standard deviation) or int (95)
+    --splot SPLOT                     Save the plot as...
+    --format {png,jpeg,jpg,tiff,pdf}  Save plot output format as..., default = png
+    --sdata SDATA                     Save the final output data used for plotting as...
 
 ```
 
@@ -26,7 +32,6 @@ Usage: accumulation_curve_kaiju.py [-h] [--file FILE] [--sample_frac SAMPLE_FRAC
 ```
 python accumulation_curve_kaiju.py --file test.txt -s test
 ```
-
 
 ## TSV file with sample header and detected taxonomic id 
 ```
