@@ -24,6 +24,7 @@ Output:
 todo:
     3. Option for printing output file
     4. check for input data: tab seperated or ....
+    5. confidence interval
     
 flaws, should be:
     1. sample without replacement, by excluding
@@ -42,15 +43,15 @@ import matplotlib.pyplot as plt
 
 
    
-def my_plot(temp_var, file, save, format):
+def my_plot(temp_var, file, save, format, ci):
     """
     #Plot line graph  
     """
-        
-    rel = sns.relplot(data = temp_var, x = 'sample_fraction', y = 'counts', ci=95, kind= 'line', hue = 'sample')
+    ci = ci  
+    rel = sns.relplot(data = temp_var, x = 'sample_fraction', y = 'counts', ci=ci, kind= 'line', hue = 'sample')
     rel.fig.suptitle('Accumulation Curve')
-    plt.xlabel("Fraction of samples") 
-    plt.ylabel("Species Estimated") 
+    rel.set_axis_labels("Fraction of samples", "Species Estimated")
+    plt.tight_layout()
     
     if save:
         print ("Analysis Done! \nPlease find your file:", save+"."+format)
@@ -98,10 +99,11 @@ def classify_count(column_name, item, threshold):
     
 
 
-def rarefy_curve(file, sample_frac, threshold, sim_times, save, format):
+def accumulation_curve(file, sample_frac, threshold, sim_times, ci, save, format):
     """
     #Function to calculate percentage of classified organism
     """
+
     my_file = pd.read_csv(file, delimiter="\t")
       
     sampl_frac1 = sample_frac.split(",")
@@ -120,11 +122,20 @@ def rarefy_curve(file, sample_frac, threshold, sim_times, save, format):
     
     all_sim_data["counts"] = pd.to_numeric(all_sim_data["counts"], downcast="float")   
     all_sim_data["sample_fraction"] = pd.to_numeric(all_sim_data["sample_fraction"], downcast="float") 
-    #print(all_sim_data.to_string())
+        #print(all_sim_data.to_string())
+
+    my_plot(all_sim_data, file, save, format, ci)
+
+def check_ci(arg):
+    if arg == "None":
+        return 0
+    elif arg == "sd":
+        return arg
+    elif 0 <= int(arg) <= 100:
+        return int(arg)
+    else:
+        raise argparse.ArgumentTypeError(f"{arg} must be in the range 0-100")
     
-    my_plot(all_sim_data, file, save, format)
-
-
 
 if __name__ == '__main__':
     ##parse your arguments
@@ -133,12 +144,13 @@ if __name__ == '__main__':
     parser.add_argument("--sample_frac", default = '0, 0.01, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1', type=str, help = "comma seperated fraction of sample (without spaces). Example: --sample_frac 0,0.01,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,0.55,0.6,0.65,0.7,0.75,0.8,.85,0.9,0.95,1")
     parser.add_argument("--threshold", nargs='?', const=1, default = 2, type=int, help = "Minimum occurance in a sample to claim a species, default = 2")
     parser.add_argument("--sim", nargs='?', const=1, default=10,  type=int, help = "No of times to simulate, default = 10")
+    parser.add_argument("--ci", default = None, action="store", type = check_ci, help = "size of confidence interval, ci: None (default) or sd (standard deviation) or int (95)")
     parser.add_argument("-s", "--save", help="Save the plot as...")
     parser.add_argument("--format", choices=('png', 'jpeg', 'jpg', 'tiff', 'pdf'), default = 'png', help="Output format, Default = png")
     args = parser.parse_args()    
     if len(sys.argv)==1: 
         parser.print_help()                                    # display help message when no args are passed.
         sys.exit(1)
-    rarefy_curve(args.file, args.sample_frac, args.threshold, args.sim, args.save, args.format)
+    accumulation_curve(args.file, args.sample_frac, args.threshold, args.sim, args.ci, args.save, args.format)
     
     
